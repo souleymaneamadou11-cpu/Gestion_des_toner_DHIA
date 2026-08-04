@@ -55,7 +55,7 @@ public class MainFrame extends JFrame {
     private final TonerDAO     tonerDAO     = new TonerDAO();
     private final MouvementDAO mouvementDAO = new MouvementDAO();
     private final StockService stockService = new StockService();
- 
+    
     // ── Timer actualisation auto (toutes les 5 min) ───────────
     private Timer refreshTimer;
  
@@ -102,7 +102,7 @@ public class MainFrame extends JFrame {
     private JPanel buildSidebar() {
         JPanel sb = new JPanel();
         sb.setBackground(SIDEBAR_BG);
-        sb.setPreferredSize(new Dimension(220, 0));
+        sb.setPreferredSize(new Dimension(200, 0));
         sb.setLayout(new BoxLayout(sb, BoxLayout.Y_AXIS));
  
         // --- Logo DHIA + nom application ---
@@ -139,7 +139,7 @@ public class MainFrame extends JFrame {
     }
  
     private JPanel buildSidebarLogo() {
-        JPanel p = new JPanel(new BorderLayout());
+        /*JPanel p = new JPanel(new BorderLayout());
         p.setBackground(SIDEBAR_BG);
         p.setBorder(new EmptyBorder(16, 14, 14, 14));
         p.setMaximumSize(new Dimension(220, 70));
@@ -182,7 +182,69 @@ public class MainFrame extends JFrame {
  
         p.add(logoArc,   BorderLayout.WEST);
         p.add(textPanel, BorderLayout.CENTER);
-        return p;
+        return p;*/
+    JPanel p = new JPanel();
+    p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
+    p.setBackground(SIDEBAR_BG);
+    p.setBorder(new EmptyBorder(18, 0, 14, 0));
+    p.setMaximumSize(new Dimension(220, 90));
+
+    // ── Logo DHIA centré ──────────────────────────────────
+    JPanel logoCanvas = new JPanel() {
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                RenderingHints.VALUE_ANTIALIAS_ON);
+            g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            int cx = getWidth() / 2; // centre horizontal du panel
+
+            // ── Arc bleu au-dessus de DHIA ────────────────
+            g2.setColor(new Color(0, 174, 239));
+            g2.setStroke(new BasicStroke(5f,
+                BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+
+            // Arc centré : commence à gauche du mot DHIA,
+            // monte au centre, termine à droite
+            java.awt.geom.QuadCurve2D arc =
+                new java.awt.geom.QuadCurve2D.Float(
+                    cx - 32, 22,  // départ gauche
+                    cx,      4,   // sommet de l'arc (centre, haut)
+                    cx + 32, 10   // arrivée droite
+                );
+            g2.draw(arc);
+
+            // ── Texte DHIA centré en dessous ──────────────
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.BOLD, 22));
+            FontMetrics fm = g2.getFontMetrics();
+            int textW = fm.stringWidth("DHIA");
+            g2.drawString("DHIA", cx - textW / 2, 46);
+
+            g2.dispose();
+        }
+    };
+    logoCanvas.setOpaque(false);
+    logoCanvas.setAlignmentX(Component.CENTER_ALIGNMENT);
+    logoCanvas.setPreferredSize(new Dimension(Integer.MAX_VALUE, 52));
+    logoCanvas.setMaximumSize(new Dimension(Integer.MAX_VALUE, 52));
+    logoCanvas.setMinimumSize(new Dimension(100, 52));
+
+    // ── Sous-titre "GestionToners" centré en dessous ──────
+    JLabel lblSub = new JLabel("GestionToners", SwingConstants.CENTER);
+    lblSub.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+    lblSub.setForeground(new Color(107, 114, 153));
+    lblSub.setAlignmentX(Component.CENTER_ALIGNMENT);
+    lblSub.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+
+    p.add(logoCanvas);
+    p.add(Box.createVerticalStrut(4));
+    p.add(lblSub);
+
+    return p;
     }
  
     private JSeparator buildSidebarSeparator() {
@@ -194,13 +256,21 @@ public class MainFrame extends JFrame {
     }
  
     private JLabel sectionLabel(String text) {
-        JLabel lbl = new JLabel(text);
+        /*JLabel lbl = new JLabel(text);
         lbl.setFont(new Font("Segoe UI", Font.BOLD, 9));
         lbl.setForeground(new Color(65, 72, 110));
         lbl.setBorder(new EmptyBorder(14, 18, 3, 14));
         lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
         lbl.setMaximumSize(new Dimension(220, 28));
-        return lbl;
+        return lbl;*/
+        JLabel lbl = new JLabel(text);
+    lbl.setFont(new Font("Segoe UI", Font.BOLD, 9));
+    lbl.setForeground(new Color(65, 72, 110));
+    // Même padding gauche que les boutons du menu
+    lbl.setBorder(new EmptyBorder(12, 14, 3, 14));
+    lbl.setAlignmentX(Component.LEFT_ALIGNMENT);
+    lbl.setMaximumSize(new Dimension(Integer.MAX_VALUE, 26));
+    return lbl;
     }
  
     /**
@@ -211,7 +281,7 @@ public class MainFrame extends JFrame {
      * @param active  Actif par défaut ?
      */
     private JButton menuItem(String icon, String label, String action, boolean active) {
-        JButton btn = new JButton(icon + "  " + label) {
+        /*JButton btn = new JButton(icon + "  " + label) {
             @Override
             protected void paintComponent(Graphics g) {
                 // Fond arrondi si actif
@@ -261,7 +331,62 @@ public class MainFrame extends JFrame {
  
         // Action
         btn.addActionListener(e -> navigateTo(action, btn));
-        return btn;
+        return btn;*/
+        JButton btn = new JButton(icon + "  " + label) {
+        @Override
+        protected void paintComponent(Graphics g) {
+            if (getBackground().equals(SIDEBAR_ITEM)) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                    RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setColor(SIDEBAR_ITEM);
+                g2.fillRoundRect(4, 2, getWidth()-8, getHeight()-4, 8, 8);
+                // Barre gauche bleue
+                g2.setColor(new Color(0, 174, 239));
+                g2.fillRoundRect(4, 2, 3, getHeight()-4, 2, 2);
+                g2.dispose();
+            }
+            super.paintComponent(g);
+        }
+    };
+    btn.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
+    btn.setForeground(active ? Color.WHITE : SIDEBAR_TEXT);
+    btn.setBackground(active ? SIDEBAR_ITEM : SIDEBAR_BG);
+    btn.setContentAreaFilled(false);
+    btn.setBorderPainted(false);
+    btn.setFocusPainted(false);
+    btn.setHorizontalAlignment(SwingConstants.LEFT);
+
+    // Padding uniforme — pas de décalage à droite
+    btn.setBorder(new EmptyBorder(8, 14, 8, 14));
+
+    // Largeur max = toute la sidebar, hauteur fixe
+    btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+    btn.setPreferredSize(new Dimension(Integer.MAX_VALUE, 36));
+    btn.setAlignmentX(Component.LEFT_ALIGNMENT);
+    btn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    btn.setName(action);
+
+    // Hover
+    btn.addMouseListener(new MouseAdapter() {
+        public void mouseEntered(MouseEvent e) {
+            if (!btn.getBackground().equals(SIDEBAR_ITEM)) {
+                btn.setForeground(Color.WHITE);
+                btn.setBackground(new Color(35, 40, 62));
+                btn.repaint();
+            }
+        }
+        public void mouseExited(MouseEvent e) {
+            if (!btn.getBackground().equals(SIDEBAR_ITEM)) {
+                btn.setForeground(SIDEBAR_TEXT);
+                btn.setBackground(SIDEBAR_BG);
+                btn.repaint();
+            }
+        }
+    });
+
+    btn.addActionListener(e -> navigateTo(action, btn));
+    return btn;
     }
  
     /** Item spécial Notifications avec badge rouge */
@@ -279,7 +404,10 @@ public class MainFrame extends JFrame {
         btnNotif.setBorderPainted(false);
         btnNotif.setFocusPainted(false);
         btnNotif.setHorizontalAlignment(SwingConstants.LEFT);
-        btnNotif.setBorder(new EmptyBorder(9, 18, 9, 0));
+        //btnNotif.setBorder(new EmptyBorder(9, 18, 9, 0));
+        btnNotif.setBorder(new EmptyBorder(8, 14, 8, 0));
+        btnNotif.setMaximumSize(new Dimension(Integer.MAX_VALUE, 36));
+        btnNotif.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 12));
         btnNotif.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         btnNotif.addActionListener(e -> navigateTo("notifs", btnNotif));
  

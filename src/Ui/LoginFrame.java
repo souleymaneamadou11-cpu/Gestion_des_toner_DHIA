@@ -918,13 +918,36 @@ public class LoginFrame extends JFrame{
         container.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // Champ password sans bordure
-        txtPassword = new JPasswordField();
+       /* txtPassword = new JPasswordField();
         txtPassword.setEchoChar('•');
         txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtPassword.setForeground(TEXT_MAIN);
         txtPassword.setCaretColor(ACCENT);
         txtPassword.setOpaque(false);
-        txtPassword.setBorder(new EmptyBorder(0, 12, 0, 4));
+        txtPassword.setBorder(new EmptyBorder(0, 12, 0, 4));*/
+       
+       txtPassword = new JPasswordField() {
+    @Override
+    protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            // Affiche le placeholder seulement si vide et pas focus
+            if (getPassword().length == 0 && !isFocusOwner()) {
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                g2.setColor(TEXT_MUTED);
+                g2.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+                g2.drawString("Entrez votre mot de passe", 12, getHeight() / 2 + 5);
+                g2.dispose();
+            }
+        }
+    };
+    txtPassword.setEchoChar('•');
+    txtPassword.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+    txtPassword.setForeground(TEXT_MAIN);
+    txtPassword.setCaretColor(ACCENT);
+    txtPassword.setOpaque(false);
+    txtPassword.setBorder(new EmptyBorder(0, 12, 0, 4));
 
         // Bouton œil dessiné en Java (pas d'emoji)
         JButton eyeBtn = new JButton() {
@@ -1190,7 +1213,7 @@ public class LoginFrame extends JFrame{
                         showError("Identifiants incorrects ou profil non autorisé.");
                         txtPassword.setText("");
                         txtPassword.requestFocus();
-                    } else {
+                    /*} else {
                         SessionManager.setUtilisateur(u);
                         showSucces("Bienvenue " + u.getPrenom() + " — chargement...");
                         Timer t = new Timer(1200, ev -> {
@@ -1199,7 +1222,19 @@ public class LoginFrame extends JFrame{
                         });
                         t.setRepeats(false);
                         t.start();
-                    }
+                    }*/
+                    } else {
+                    SessionManager.setUtilisateur(u);
+                    // Ferme le login et lance le splash screen
+                    dispose();
+                    SplashScreen splash = new SplashScreen(
+                        u.getPrenom() + " " + u.getNom(),
+                        u.getRole(),
+                        () -> SwingUtilities.invokeLater(() ->
+                            new MainFrame().setVisible(true))
+                    );
+                    splash.demarrer();
+                }
                 } catch (Exception ex) {
                     showError("Erreur inattendue : " + ex.getMessage());
                 }

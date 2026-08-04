@@ -37,6 +37,9 @@ public class NotificationsPanel extends JPanel{
         kpis.setBackground(MainFrame.PAGE_BG);
         kpis.setMaximumSize(new Dimension(Integer.MAX_VALUE, 80));
         kpis.setAlignmentX(LEFT_ALIGNMENT);
+        /*JPanel kpis = new JPanel(new GridLayout(1, 3, 12, 0));
+        kpis.setBackground(MainFrame.PAGE_BG);
+        kpis.setAlignmentX(LEFT_ALIGNMENT);*/
  
         kpis.add(kpi(ruptures.size(), "Rupture(s) totale(s)", MainFrame.DANGER));
         kpis.add(kpi(alertes.size() - ruptures.size(), "Alerte(s) seuil", MainFrame.WARNING));
@@ -151,5 +154,46 @@ public class NotificationsPanel extends JPanel{
         body.add(vl); body.add(Box.createVerticalStrut(3)); body.add(ll);
         p.add(body, BorderLayout.CENTER);
         return p;
+        /*JPanel p = new JPanel(new BorderLayout());
+        p.setBackground(MainFrame.CARD_BG);
+        p.setBorder(BorderFactory.createLineBorder(MainFrame.BORDER_CLR));
+
+        // Barre couleur en haut
+        JPanel bar = new JPanel();
+        bar.setBackground(c);
+        bar.setPreferredSize(new Dimension(0, 4));
+        p.add(bar, BorderLayout.NORTH);
+
+        // Corps avec padding identique pour toutes les cartes
+        JPanel body = new JPanel(new GridBagLayout());
+        body.setBackground(MainFrame.CARD_BG);
+        body.setBorder(new EmptyBorder(14, 18, 14, 18));
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx  = 0;
+        gbc.fill   = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.anchor = GridBagConstraints.WEST;
+
+        // Chiffre
+        JLabel vl = new JLabel(String.valueOf(val));
+        vl.setFont(new Font("Segoe UI", Font.BOLD, 30));
+        vl.setForeground(c);
+        gbc.gridy = 0;
+        body.add(vl, gbc);
+
+        // Espace fixe entre chiffre et libellé
+        gbc.gridy = 1;
+        body.add(Box.createVerticalStrut(6), gbc);
+
+        // Libellé
+        JLabel ll = new JLabel(lbl);
+        ll.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        ll.setForeground(MainFrame.TEXT_GREY);
+        gbc.gridy = 2;
+        body.add(ll, gbc);
+
+        p.add(body, BorderLayout.CENTER);
+        return p;*/
     }
 }

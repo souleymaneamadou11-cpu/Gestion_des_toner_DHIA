@@ -75,7 +75,7 @@ public class BonSortiePDF {
         enTete.setMarginBottom(10);
  
         // Cellule logo DHIA
-        Cell logoCell = new Cell().setBorder(Border.NO_BORDER).setPaddingBottom(4);
+       /* Cell logoCell = new Cell().setBorder(Border.NO_BORDER).setPaddingBottom(4);
         URL logoUrl = BonSortiePDF.class.getResource("resources/logo_Dhia.jpg");
         if (logoUrl != null) {
             Image logo = new Image(ImageDataFactory.create(logoUrl));
@@ -88,7 +88,49 @@ public class BonSortiePDF {
                 .setFont(bold).setFontSize(28)
                 .setFontColor(DHIA_BLUE);
             logoCell.add(logoTxt);
-        }
+        }*/
+       Cell logoCell = new Cell().setBorder(Border.NO_BORDER).setPaddingBottom(4);
+
+// Essaye tous les chemins et noms possibles
+    String[] cheminsPossibles = {
+        "/resources/logo_Dhia.jpg",   // votre fichier exact
+        "/resources/logo_dhia.jpg",   // minuscules
+        "/resources/logo_Dhia.png",   // png majuscule
+        "/resources/logo_dhia.png",   // png minuscules
+        "/logo_Dhia.jpg",             // racine classpath
+        "/logo_dhia.jpg",
+    };
+
+    Image logoImage = null;
+    for (String chemin : cheminsPossibles) {
+        try {
+            java.io.InputStream is = BonSortiePDF.class.getResourceAsStream(chemin);
+            if (is != null) {
+                byte[] data = is.readAllBytes();
+                is.close();
+                logoImage = new Image(ImageDataFactory.create(data));
+                //System.out.println("Logo trouvé : " + chemin); // confirmation dans console
+                break;
+            }
+        } catch (Exception ignored) {}
+    }
+
+    if (logoImage != null) {
+        //logoImage.setWidth(120);
+        //logoImage.setAutoScaleHeight(true);
+        logoImage.setWidth(90);  // réduit la largeur
+        logoImage.setHeight(45); // hauteur fixe proportionnelle
+        logoImage.setAutoScaleHeight(false);
+        logoCell.add(logoImage);
+    } else {
+        // Fallback SVG-like avec iText si logo introuvable
+        System.out.println("Logo introuvable — utilisation du texte DHIA");
+        Paragraph logoTxt = new Paragraph("DHIA")
+            .setFont(bold)
+            .setFontSize(28)
+            .setFontColor(DHIA_BLUE);
+        logoCell.add(logoTxt);
+    }
  
         // Cellule titre formulaire
         Cell titreCell = new Cell().setBorder(Border.NO_BORDER)
